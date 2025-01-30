@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:modernvet/providers/review_provider.dart';
 import 'package:modernvet/widgets/error_dialog.dart';
 import 'package:modernvet/widgets/success_dialog.dart';
-import 'package:modernvet/api_services.dart';
 
 class SubmitReviewScreen extends StatefulWidget {
   const SubmitReviewScreen({super.key});
@@ -24,6 +25,50 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
     _petNameController.dispose();
     _commentController.dispose();
     super.dispose();
+  }
+
+  Future<void> _submitReview() async {
+    if (_nameController.text.isEmpty ||
+        _petNameController.text.isEmpty ||
+        _rating == 0) {
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await context.read<ReviewProvider>().submitReview(
+            name: _nameController.text,
+            petName: _petNameController.text,
+            rating: _rating,
+            comments: _commentController.text,
+          );
+      
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const SuccessDialog(
+            message: 'Feedback submitted',
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => ErrorDialog(
+            message: e is DioException
+                ? e.response?.data['error'] ?? 'An error occurred'
+                : 'An error occurred',
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -163,65 +208,7 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
               child: ElevatedButton(
                 onPressed: _isLoading
                     ? null
-                    : () async {
-                        if (_nameController.text.isEmpty) {
-                          showDialog(
-                            context: context,
-                            builder: (context) => const ErrorDialog(
-                              message: 'Please enter your name',
-                            ),
-                          );
-                          return;
-                        }
-
-                        if (_petNameController.text.isEmpty) {
-                          showDialog(
-                            context: context,
-                            builder: (context) => const ErrorDialog(
-                              message: 'Please enter your pet\'s name',
-                            ),
-                          );
-                          return;
-                        }
-
-                        setState(() {
-                          _isLoading = true;
-                        });
-
-                        try {
-                          await ApiService().submitReview(
-                            name: _nameController.text,
-                            petName: _petNameController.text,
-                            rating: _rating,
-                            comments: _commentController.text,
-                          );
-                          
-                          if (mounted) {
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) => const SuccessDialog(
-                                message: 'Feedback submitted',
-                              ),
-                            );
-                          }
-                        } catch (e) {
-                          if (mounted) {
-                            showDialog(
-                              context: context,
-                              builder: (context) => ErrorDialog(
-                                message: e is DioException ? e.response?.data['error'] ?? 'An error occurred' : 'An error occurred',
-                              ),
-                            );
-                          }
-                        } finally {
-                          if (mounted) {
-                            setState(() {
-                              _isLoading = false;
-                            });
-                          }
-                        }
-                      },
+                    : _submitReview,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: _isLoading

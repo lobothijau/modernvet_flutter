@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:modernvet/api_services.dart';
+import 'package:provider/provider.dart';
+import 'package:modernvet/providers/review_provider.dart';
 import 'package:modernvet/screens/submit_review_screen.dart';
 import 'package:modernvet/widgets/error_view.dart';
 import 'package:modernvet/widgets/review_list.dart';
-import '../models/review.dart';
 
 class ReviewsScreen extends StatefulWidget {
   const ReviewsScreen({super.key});
@@ -13,62 +13,41 @@ class ReviewsScreen extends StatefulWidget {
 }
 
 class _ReviewsScreenState extends State<ReviewsScreen> {
-  List<Review> reviews = [];
-  final apiService = ApiService();
-  bool isLoading = false;
-  String? error;
-
   @override
   void initState() {
     super.initState();
-    fetchReviews();
-  }
 
-  Future<void> fetchReviews() async {
-    setState(() {
-      isLoading = true;
-      error = null;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ReviewProvider>().fetchReviews();
     });
-
-    try {
-      final fetchedReviews = await apiService.getReviews();
-      setState(() {
-        reviews = fetchedReviews;
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        error = 'Failed to load reviews.\nPlease try again.';
-        isLoading = false;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Our reviews'),
+        title: const Text('Reviews'),
       ),
       body: Column(
         children: [
-          if (isLoading)
-            const Expanded(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            )
-          else if (error != null)
-            Expanded(
-              child: ErrorView(
-                error: error!,
-                onRetry: fetchReviews,
-              ),
-            )
-          else
-            Expanded(
-              child: ReviewList(reviews: reviews),
+          Expanded(
+            child: Consumer<ReviewProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (provider.error != null) {
+                  return ErrorView(
+                    error: provider.error!,
+                    onRetry: provider.fetchReviews,
+                  );
+                }
+
+                return ReviewList(reviews: provider.reviews);
+              },
             ),
+          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: SizedBox(

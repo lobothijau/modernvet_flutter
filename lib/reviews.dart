@@ -78,21 +78,50 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             )
           else
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: reviews.length,
-                itemBuilder: (context, index) {
-                  final review = reviews[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: ReviewCard(
-                      name: review.name,
-                      petName: review.petName,
-                      rating: review.rating,
+              child: reviews.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 16),
+                            const Text(
+                              'No reviews yet',
+                              style: TextStyle(
+                                fontSize: 25,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Be the first by clicking the button below!',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 25,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: reviews.length,
+                      itemBuilder: (context, index) {
+                        final review = reviews[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: ReviewCard(
+                            name: review.name,
+                            petName: review.petName,
+                            rating: review.rating,
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           Padding(
             padding: const EdgeInsets.all(16.0),

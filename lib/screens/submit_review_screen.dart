@@ -28,9 +28,23 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
   }
 
   Future<void> _submitReview() async {
-    if (_nameController.text.isEmpty ||
-        _petNameController.text.isEmpty ||
-        _rating == 0) {
+    if (_nameController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => const ErrorDialog(
+          message: 'Please enter your name',
+        ),
+      );
+      return;
+    }
+
+    if (_petNameController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => const ErrorDialog(
+          message: 'Please enter your pet\'s name',
+        ),
+      );
       return;
     }
 

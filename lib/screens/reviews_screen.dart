@@ -22,60 +22,68 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     });
   }
 
+  Future<void> _refreshReviews() async {
+    // don't show loading indicator, only used refresh indicator to show a loading state
+    await context.read<ReviewProvider>().fetchReviews(showLoading: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reviews'),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Consumer<ReviewProvider>(
-              builder: (context, provider, child) {
-                if (provider.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+      body: RefreshIndicator(
+        onRefresh: _refreshReviews,
+        child: Column(
+          children: [
+            Expanded(
+              child: Consumer<ReviewProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                if (provider.error != null) {
-                  return ErrorView(
-                    error: provider.error!,
-                    onRetry: provider.fetchReviews,
-                  );
-                }
+                  if (provider.error != null) {
+                    return ErrorView(
+                      error: provider.error!,
+                      onRetry: provider.fetchReviews,
+                    );
+                  }
 
-                return ReviewList(reviews: provider.reviews);
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SubmitReviewScreen(),
-                    ),
-                  );
+                  return ReviewList(reviews: provider.reviews);
                 },
-                child: const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text(
-                    'Submit a review',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.w300,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SubmitReviewScreen(),
+                      ),
+                    );
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text(
+                      'Submit a review',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.w300,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

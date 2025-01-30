@@ -12,8 +12,8 @@ class ReviewProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  Future<void> fetchReviews() async {
-    _isLoading = true;
+  Future<void> fetchReviews({bool showLoading = true}) async {
+    _isLoading = showLoading;
     _error = null;
     notifyListeners();
 
@@ -41,9 +41,9 @@ class ReviewProvider extends ChangeNotifier {
         rating: rating,
         comments: comments,
       );
-      await fetchReviews(); // Refresh reviews after successful submission
+      await fetchReviews();
     } catch (e) {
-      rethrow; // Re-throw to handle in UI
+      rethrow;
     }
   }
 } 

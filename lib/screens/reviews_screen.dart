@@ -88,6 +88,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                     'Submit a review',
                     style: TextStyle(
                       fontSize: 20,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.w300,
                     ),
                   ),
                 ),

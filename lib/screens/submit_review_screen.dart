@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:modernvet/widgets/error_dialog.dart';
+import 'package:modernvet/widgets/success_dialog.dart';
 import 'package:modernvet/api_services.dart';
 
 class SubmitReviewScreen extends StatefulWidget {
@@ -196,7 +197,13 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
                           );
                           
                           if (mounted) {
-                            Navigator.of(context).pop();
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => const SuccessDialog(
+                                message: 'Feedback submitted',
+                              ),
+                            );
                           }
                         } catch (e) {
                           if (mounted) {
@@ -230,6 +237,8 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
                           'Submit',
                           style: TextStyle(
                             fontSize: 20,
+                            fontFamily: 'Nunito',
+                            fontWeight: FontWeight.w300,
                           ),
                         ),
                 ),

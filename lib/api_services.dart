@@ -41,7 +41,7 @@ class ApiService {
         'name': name,
         'pet_name': petName,
         'rating': rating,
-        'comment': comments,
+        'comments': comments,
       });
     } on DioException catch (e) {
       debugPrint('Error submitting review: ${e.message}');

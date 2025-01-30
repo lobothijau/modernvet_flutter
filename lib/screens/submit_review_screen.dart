@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:modernvet/widgets/error_dialog.dart';
+import 'package:modernvet/api_services.dart';
 
 class SubmitReviewScreen extends StatefulWidget {
   const SubmitReviewScreen({super.key});
@@ -157,7 +159,7 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_nameController.text.isEmpty) {
                     showDialog(
                       context: context,
@@ -178,16 +180,27 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
                     return;
                   }
 
-                  // TODO: Deliberately remove rating validation locally to show error from api
-                  // if (_rating == 0) {
-                  //   showDialog(
-                  //     context: context,
-                  //     builder: (context) => const ErrorDialog(
-                  //       message: 'Please select a rating',
-                  //     ),
-                  //   );
-                  //   return;
-                  // }
+                  try {
+                    await ApiService().submitReview(
+                      name: _nameController.text,
+                      petName: _petNameController.text,
+                      rating: _rating,
+                      comments: _commentController.text,
+                    );
+                    
+                    if (mounted) {
+                      Navigator.of(context).pop();
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => ErrorDialog(
+                          message: e is DioException ? e.response?.data['error'] ?? 'An error occurred' : 'An error occurred',
+                        ),
+                      );
+                    }
+                  }
                 },
                 child: const Padding(
                   padding: EdgeInsets.all(16),

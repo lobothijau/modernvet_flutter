@@ -22,6 +22,7 @@ class ApiService {
         petName: json['pet_name'],
         rating: json['rating'],
         comments: json['comments'],
+        createdAt: json['created_at'],
       )).toList();
     } on DioException catch (e) {
       debugPrint('Error fetching reviews: ${e.message}');

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:modernvet/api_services.dart';
 import 'package:modernvet/widgets/error_view.dart';
 import 'package:modernvet/widgets/review_list.dart';
-import 'models/review.dart';
+import '../models/review.dart';
 
 class ReviewsScreen extends StatefulWidget {
   const ReviewsScreen({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:modernvet/theme.dart';
-import 'reviews.dart';
+import 'screens/reviews_screen.dart';
 
 void main() {
   runApp(const MyApp());

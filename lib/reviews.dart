@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:modernvet/api_services.dart';
 import 'package:modernvet/widgets/error_display.dart';
+import 'package:modernvet/widgets/empty_reviews_view.dart';
 import 'models/review.dart';
 import 'review_card.dart';
 
@@ -59,7 +60,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             )
           else if (error != null)
             Expanded(
-              child: ErrorDisplay(
+              child: ErrorView(
                 error: error!,
                 onRetry: fetchReviews,
               ),
@@ -67,34 +68,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           else
             Expanded(
               child: reviews.isEmpty
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const SizedBox(height: 16),
-                            const Text(
-                              'No reviews yet',
-                              style: TextStyle(
-                                fontSize: 25,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Be the first by clicking the button below!',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 25,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
+                  ? const EmptyReviewsView()
                   : ListView.builder(
                       padding: const EdgeInsets.all(16),
                       itemCount: reviews.length,

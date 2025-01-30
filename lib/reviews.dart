@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:modernvet/api_services.dart';
 import 'models/review.dart';
 import 'review_card.dart';
+
 class ReviewsScreen extends StatefulWidget {
   const ReviewsScreen({super.key});
 
@@ -9,18 +11,36 @@ class ReviewsScreen extends StatefulWidget {
 }
 
 class _ReviewsScreenState extends State<ReviewsScreen> {
-  final List<Review> reviews = [
-    Review(name: 'Bob', petName: 'Garfield', rating: 4),
-    Review(name: 'Michael', petName: 'Bobo', rating: 5),
-    Review(name: 'Arief', petName: 'Mochi', rating: 3),
-    Review(name: 'Gelbi', petName: 'Miso', rating: 4),
-    Review(name: 'Sarah', petName: 'Luna', rating: 5),
-    Review(name: 'John', petName: 'Max', rating: 4),
-    Review(name: 'Emma', petName: 'Bella', rating: 3),
-    Review(name: 'David', petName: 'Rocky', rating: 5),
-    Review(name: 'Lisa', petName: 'Charlie', rating: 4),
-    Review(name: 'Alex', petName: 'Daisy', rating: 5),
-  ];
+  List<Review> reviews = [];
+  final _apiService = ApiService();
+  bool _isLoading = false;
+  String? _error;
+  
+  @override
+  void initState() {
+    super.initState();
+    fetchReviews();
+  }
+
+  Future<void> fetchReviews() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final fetchedReviews = await _apiService.getReviews();
+      setState(() {
+        reviews = fetchedReviews;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Failed to load reviews. Please try again later.';
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,29 +50,58 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       ),
       body: Column(
         children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: reviews.length,
-              itemBuilder: (context, index) {
-                final review = reviews[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: ReviewCard(
-                    name: review.name,
-                    petName: review.petName,
-                    rating: review.rating,
-                  ),
-                );
-              },
+          if (_isLoading)
+            const Expanded(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          else if (_error != null)
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _error!,
+                      style: const TextStyle(color: Colors.red),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: fetchReviews,
+                      child: const Text('Try Again'),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: reviews.length,
+                itemBuilder: (context, index) {
+                  final review = reviews[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: ReviewCard(
+                      name: review.name,
+                      petName: review.petName,
+                      rating: review.rating,
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  // TODO: Implement review submission
+                },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),

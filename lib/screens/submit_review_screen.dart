@@ -15,6 +15,7 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
   final _petNameController = TextEditingController();
   final _commentController = TextEditingController();
   int _rating = 0;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -159,57 +160,78 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () async {
-                  if (_nameController.text.isEmpty) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => const ErrorDialog(
-                        message: 'Please enter your name',
-                      ),
-                    );
-                    return;
-                  }
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        if (_nameController.text.isEmpty) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => const ErrorDialog(
+                              message: 'Please enter your name',
+                            ),
+                          );
+                          return;
+                        }
 
-                  if (_petNameController.text.isEmpty) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => const ErrorDialog(
-                        message: 'Please enter your pet\'s name',
-                      ),
-                    );
-                    return;
-                  }
+                        if (_petNameController.text.isEmpty) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => const ErrorDialog(
+                              message: 'Please enter your pet\'s name',
+                            ),
+                          );
+                          return;
+                        }
 
-                  try {
-                    await ApiService().submitReview(
-                      name: _nameController.text,
-                      petName: _petNameController.text,
-                      rating: _rating,
-                      comments: _commentController.text,
-                    );
-                    
-                    if (mounted) {
-                      Navigator.of(context).pop();
-                    }
-                  } catch (e) {
-                    if (mounted) {
-                      showDialog(
-                        context: context,
-                        builder: (context) => ErrorDialog(
-                          message: e is DioException ? e.response?.data['error'] ?? 'An error occurred' : 'An error occurred',
+                        setState(() {
+                          _isLoading = true;
+                        });
+
+                        try {
+                          await ApiService().submitReview(
+                            name: _nameController.text,
+                            petName: _petNameController.text,
+                            rating: _rating,
+                            comments: _commentController.text,
+                          );
+                          
+                          if (mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => ErrorDialog(
+                                message: e is DioException ? e.response?.data['error'] ?? 'An error occurred' : 'An error occurred',
+                              ),
+                            );
+                          }
+                        } finally {
+                          if (mounted) {
+                            setState(() {
+                              _isLoading = false;
+                            });
+                          }
+                        }
+                      },
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 30,
+                          width: 30,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          'Submit',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
                         ),
-                      );
-                    }
-                  }
-                },
-                child: const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text(
-                    'Submit',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
                 ),
               ),
             ),

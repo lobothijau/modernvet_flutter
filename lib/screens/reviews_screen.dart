@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:modernvet/api_services.dart';
+import 'package:modernvet/screens/submit_review_screen.dart';
 import 'package:modernvet/widgets/error_view.dart';
 import 'package:modernvet/widgets/review_list.dart';
 import '../models/review.dart';
@@ -74,13 +75,13 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Implement review submission
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SubmitReviewScreen(),
+                    ),
+                  );
                 },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
                 child: const Padding(
                   padding: EdgeInsets.all(16),
                   child: Text(

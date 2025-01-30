@@ -10,6 +10,9 @@ final ThemeData appTheme = ThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF065C99),
       foregroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
     ),
   ),
   fontFamily: 'Nunito',

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:modernvet/api_services.dart';
-import 'package:modernvet/widgets/error_display.dart';
-import 'package:modernvet/widgets/empty_reviews_view.dart';
+import 'package:modernvet/widgets/error_view.dart';
+import 'package:modernvet/widgets/review_list.dart';
 import 'models/review.dart';
-import 'review_card.dart';
 
 class ReviewsScreen extends StatefulWidget {
   const ReviewsScreen({super.key});
@@ -67,23 +66,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             )
           else
             Expanded(
-              child: reviews.isEmpty
-                  ? const EmptyReviewsView()
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: reviews.length,
-                      itemBuilder: (context, index) {
-                        final review = reviews[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: ReviewCard(
-                            name: review.name,
-                            petName: review.petName,
-                            rating: review.rating,
-                          ),
-                        );
-                      },
-                    ),
+              child: ReviewList(reviews: reviews),
             ),
           Padding(
             padding: const EdgeInsets.all(16.0),

@@ -20,5 +20,9 @@ final ThemeData appTheme = ThemeData(
       fontSize: 24,
       color: Colors.black,
     ),
+    scrolledUnderElevation: 0,
+    surfaceTintColor: Colors.transparent,
+    backgroundColor: Colors.white,
   ),
+  scaffoldBackgroundColor: Colors.white,
 );

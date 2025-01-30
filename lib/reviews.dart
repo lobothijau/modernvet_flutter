@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:modernvet/api_services.dart';
+import 'package:modernvet/widgets/error_display.dart';
 import 'models/review.dart';
 import 'review_card.dart';
 
@@ -12,10 +13,10 @@ class ReviewsScreen extends StatefulWidget {
 
 class _ReviewsScreenState extends State<ReviewsScreen> {
   List<Review> reviews = [];
-  final _apiService = ApiService();
-  bool _isLoading = false;
-  String? _error;
-  
+  final apiService = ApiService();
+  bool isLoading = false;
+  String? error;
+
   @override
   void initState() {
     super.initState();
@@ -24,20 +25,20 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
 
   Future<void> fetchReviews() async {
     setState(() {
-      _isLoading = true;
-      _error = null;
+      isLoading = true;
+      error = null;
     });
 
     try {
-      final fetchedReviews = await _apiService.getReviews();
+      final fetchedReviews = await apiService.getReviews();
       setState(() {
         reviews = fetchedReviews;
-        _isLoading = false;
+        isLoading = false;
       });
     } catch (e) {
       setState(() {
-        _error = 'Failed to load reviews. Please try again later.';
-        _isLoading = false;
+        error = 'Failed to load reviews.\nPlease try again.';
+        isLoading = false;
       });
     }
   }
@@ -50,30 +51,17 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       ),
       body: Column(
         children: [
-          if (_isLoading)
+          if (isLoading)
             const Expanded(
               child: Center(
                 child: CircularProgressIndicator(),
               ),
             )
-          else if (_error != null)
+          else if (error != null)
             Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      _error!,
-                      style: const TextStyle(color: Colors.red),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: fetchReviews,
-                      child: const Text('Try Again'),
-                    ),
-                  ],
-                ),
+              child: ErrorDisplay(
+                error: error!,
+                onRetry: fetchReviews,
               ),
             )
           else
